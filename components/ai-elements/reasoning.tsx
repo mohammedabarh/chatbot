@@ -204,9 +204,10 @@ export type ReasoningContentProps = HTMLAttributes<HTMLDivElement> & {
 const streamdownPlugins = { cjk, code, math, mermaid };
 
 export const ReasoningContent = memo(
-  ({ className, children, ...props }: ReasoningContentProps) => {
+  ({ className, children, dir, ...restHtmlProps }: ReasoningContentProps) => {
     const { isStreaming, isOpen } = useReasoning();
     const scrollRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
       if (isStreaming && scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -215,19 +216,30 @@ export const ReasoningContent = memo(
 
     if (!isOpen) return null;
 
+    // التحقق الصارم والآمن من نوع اتجاه النص قبل التمرير لـ Streamdown
+    const validDir = 
+      dir === "rtl" || dir === "ltr" || dir === "auto" 
+        ? dir 
+        : undefined;
+
     return (
       <div
         className={cn(
           "mt-2 animate-in fade-in-0 duration-200 text-muted-foreground/60 [overflow-anchor:none]",
           className
         )}
+        dir={dir} // نمرر الـ dir الأصلية هنا للـ div
+        {...restHtmlProps} // نمرر باقي خصائص الـ HTML المستخرجة النظيفة هنا
       >
         <div
           className="max-h-[200px] overflow-y-auto rounded-lg border border-border/20 bg-muted/30 px-3 py-2 text-[11px] leading-relaxed"
           ref={scrollRef}
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <Streamdown plugins={streamdownPlugins} {...props}>
+          <Streamdown 
+            plugins={streamdownPlugins} 
+            dir={validDir}
+          >
             {children}
           </Streamdown>
         </div>
