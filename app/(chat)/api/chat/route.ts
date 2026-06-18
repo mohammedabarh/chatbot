@@ -206,10 +206,8 @@ export async function POST(request: Request) {
                   "updateDocument",
                   "requestSuggestions",
                 ],
+          // تم تعديل هذا الجزء لإزالة تفعيل بوابة Vercel المخفية وتمرير التخصيصات الأخرى فقط
           providerOptions: {
-            ...(modelConfig?.gatewayOrder && {
-              gateway: { order: modelConfig.gatewayOrder },
-            }),
             ...(modelConfig?.reasoningEffort && {
               openai: { reasoningEffort: modelConfig.reasoningEffort },
             }),
